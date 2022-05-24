@@ -7,27 +7,9 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const mysql = require('mysql')
 const jwt = require('jsonwebtoken')
-// const passport = require('passport')
-// const flash = require('express-flash')
-// const session = require('express-session')
 const app = express()
 //const port = process.env.PORT || 5000
 
-// const initializePassport = require('./passport-config')
-// initializePassport (
-//     passport, 
-//     email => users.find(user => user.email === email),
-//     id => users.find(user => user.id === id)
-// )
-
-// app.use(flash())
-// app.use(session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// }))
-// app.use(passport.initialize())
-// app.use(passport.session())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
@@ -54,7 +36,7 @@ app.get('/dog', (req, res)=> {
 })
 
 app.get('/worker/dog', authenticateToken, (req, res)=> {
-    
+    console.log('tyes')
     connectDb.getConnection((err, connection)=>{
         if(err) throw err
         console.log(`connected as id ${connection.threadId}`)
@@ -72,21 +54,49 @@ app.get('/worker/dog', authenticateToken, (req, res)=> {
 })
 
 // get a dog record by id
-app.get('/dog/:id', (req, res)=> {
-    
+app.get('/dog/:id', authenticateToken, (req, res)=> {
+    console.log('tyes')
     connectDb.getConnection((err, connection)=>{
         if(err) throw err
-        console.log(`connected as id ${connection.threadId}`)
         
+        console.log(`connected as id ${connection.threadId}`)
+        console.log(req.params.id)
         connection.query('SELECT * FROM dog WHERE id = ?', [req.params.id], (err, rows)=>{
             connection.release()    // return the connection to connectDb
-
+            
             if(!err) {
+                //const data = JSON.stringify(rows)
+                //const dogInfo = JSON.parse(data)
+                //console.log(dogInfo[0].age)
+                //res.json({ id: dogInfo[0].age , })
                 res.send(rows)
             } else {
                 console.log(err)
             }
         })
+    })
+})
+
+// update a dog record
+app.put('/dog:id', authenticateToken,(req, res)=> {
+    
+    connectDb.getConnection((err, connection)=>{
+        if(err) throw err
+        console.log(`connected as id ${connection.threadId}`)
+        
+        const { id, name, age, sex, image } = req.body
+
+        connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, image = ? WHERE id = ?', [name, age, sex, image, id], (err, rows)=>{
+            connection.release()    // return the connection to connectDb
+
+            if(!err) {
+                res.send(`dog with the record name:${[name]} has been updated.`)
+            } else {
+                console.log(err)
+            }
+        })
+
+        console.log(req.body)
     })
 })
 
@@ -132,69 +142,10 @@ app.post('/dog', (req, res)=> {
     })
 })
 
-// update a dog record
-app.put('/dog', (req, res)=> {
-    
-    connectDb.getConnection((err, connection)=>{
-        if(err) throw err
-        console.log(`connected as id ${connection.threadId}`)
-        
-        const { id, name, age, sex, image } = req.body
-
-        connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, image = ? WHERE id = ?', [name, age, sex, image, id], (err, rows)=>{
-            connection.release()    // return the connection to connectDb
-
-            if(!err) {
-                res.send(`dog with the record name:${[name]} has been updated.`)
-            } else {
-                console.log(err)
-            }
-        })
-
-        console.log(req.body)
-    })
-})
 
 //=============================================================================================================================
 //=============================================================================================================================
 //=============================================================================================================================
-
-const users = []
-
-let refreshTokens = [] 
-
-
-// app.post('/employee/login', (req, res)=> {
-
-//     connectDb.getConnection((err, connection)=>{
-//         if(err) throw err
-//         const { email, password } = req.body
-        
-//         connection.query('SELECT * FROM employee WHERE email = ? AND password = ?', [email, password], (err, rows)=>{
-//             connection.release()    // return the connection to connectDb
-//             if(!err) {
-
-//                 const string = JSON.stringify(rows)
-//                 const data = JSON.parse(string)
-
-//                 if (users != null){
-//                     users.shift()      
-//                 }
-
-//                 users.push({
-//                     id: data[0].id,
-//                     email: data[0].email,
-//                     password: data[0].password,
-//                     sign_up_code: data[0].sign_up_code
-//                 })
-
-//                 res.send(users)
-//             } else {
-//                 console.log("fail login")
-//             }
-//         })
-//     })
-// })
 
 app.post('/login', (req, res) => {
 
@@ -208,12 +159,12 @@ app.post('/login', (req, res) => {
                 if (rows.length === 0) {
                     res.send('User Not Found, Please try again.')
                 } else {
+                    console.log(rows.email)
                     const user = { email: rows.email, password: rows.password }
 
                     const accessToken = generateAccessToken(user)
                     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-                    refreshTokens.push(refreshToken)
-                    console.log(accessToken)
+                    //console.log(accessToken)
                     res.json({ accessToken: accessToken })
                 }
             } else {
@@ -234,9 +185,9 @@ app.post('/login', (req, res) => {
 //     res.json({ accessToken: accessToken , refreshToken: refreshToken})
 // })
 
-app.get('/posts', authenticateToken, (req, res) => {
-    res.json(posts.filter(post => post.email === req.user.email))
-})
+// app.get('/posts', authenticateToken, (req, res) => {
+//     res.json(posts.filter(post => post.email === req.user.email))
+// })
 
 app.post('/token', (req, res) => {
     const refreshToken = req.body.token
@@ -260,10 +211,12 @@ function authenticateToken(req, res, next) {
     console.log(req.headers)
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
+    console.log(token)
     if (token == null) return res.sendStatus(401)
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
+        console.log('123')
         req.user = user
         next()
     })
@@ -334,9 +287,6 @@ app.delete('/worker/:id', (req, res)=> {
     })
 })
 
-app.get('/', (req, res)=> {
-
-})
 
 // insert a employee record
 app.post('/worker', (req, res)=> {
@@ -406,26 +356,6 @@ app.put('/worker', (req, res)=> {
     })
 })
 
-app.get('/login', (req, res)=> {
-    
-    connectDb.getConnection((err, connection)=>{
-        if(err) throw err
-        console.log(`connected as id ${connection.threadId}`)
-
-        const { email, password } = req.body
-        
-        connection.query('SELECT * FROM worker WHERE email = ? AND password = ?', [email, password], (err, rows)=>{
-            connection.release()    // return the connection to connectDb
-
-            if(!err) {
-                res.send(rows)
-            } else {
-                console.log("fail login")
-            }
-        })
-    })
-
-})
 
 // app.post('/login', (req, res, next)=> {
 //     console.log("yes") 
