@@ -15,6 +15,7 @@
     "express": "^4.18.1",
     "express-flash": "0.0.2",
     "express-session": "^1.17.3",
+    "jsdoc": "^3.6.10",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "passport": "^0.6.0",
