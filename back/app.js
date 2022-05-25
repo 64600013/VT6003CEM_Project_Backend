@@ -78,15 +78,15 @@ app.get('/dog/:id', authenticateToken, (req, res)=> {
 })
 
 // update a dog record
-app.put('/dog:id', authenticateToken,(req, res)=> {
+app.put('/dog/:id', authenticateToken,(req, res)=> {
     
     connectDb.getConnection((err, connection)=>{
         if(err) throw err
         console.log(`connected as id ${connection.threadId}`)
         
-        const { id, name, age, sex, image } = req.body
+        const { id, name, age, sex, breed, image } = req.body
 
-        connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, image = ? WHERE id = ?', [name, age, sex, image, id], (err, rows)=>{
+        connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, breed = ?, image = ? WHERE id = ?', [name, age, sex, breed, image, id], (err, rows)=>{
             connection.release()    // return the connection to connectDb
 
             if(!err) {
