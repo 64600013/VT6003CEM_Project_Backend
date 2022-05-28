@@ -20,20 +20,20 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
+// Swagger OAS details
 const swaggerOptions = {
     swaggerDefinition: {
         info: {
             title: 'Dog Shelter API',
-            description: "Dos Shelter API for listing and matchin dogs.",
-            contact: {
-                name: "test"
-            },
-            servers: ["http://localhost:4000/login"]
+            description: "Dos Shelter API for listing and matching dogs.",
+            servers: ["http://localhost:4000/"]
         }
     },
     apis: ["app.js"]
 }
 
+// Configuarion for OAS documents
+// http://localhost:4000/api-docs/
 const swaggerDocs = swaggerJsDoc(swaggerOptions)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
@@ -58,10 +58,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
  * @swagger
  * /dog:
  *   get:
- *     description: Get all the dog records
+ *     description: Get all the dog records. Avaliable for all users to use.
  *     responses:
  *       '403':
- *         description: Error message
+ *         description: Error status code if the query went wrong.
+ *       'rows':
+ *         description: The dog records in the database.
+ *     tags:
+ *       - Public
  */
 app.get('/dog', (req, res)=> {
     var process = false 
@@ -93,6 +97,32 @@ app.get('/dog', (req, res)=> {
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {Object|Status} The record data of the corresponding dog or a 403 status code to tell the call failed.
  * 
+ */
+/**
+ * @swagger
+ * /dog/breed/{breed}:
+ *   get:
+ *     description: Filter the breed name to get the dog record by breed.
+ *     parameters:
+ *       - in: path
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *      - Public
  */
 app.get('/dog/breed/:breed', (req, res)=> {
     var process = false 
@@ -134,6 +164,32 @@ app.get('/dog/breed/:breed', (req, res)=> {
  * @returns {Object|Status} The record data of the corresponding dog or a 403 status code to tell the call failed.
  * 
  */
+/**
+ * @swagger
+ * /dog/age/{age}:
+ *   get:
+ *     description: Filter the age name to get the dog record by age.
+ *     parameters:
+ *       - in: path
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Public
+ */
 app.get('/dog/age/:age', (req, res)=> {
     var process = false 
 
@@ -173,6 +229,32 @@ app.get('/dog/age/:age', (req, res)=> {
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {Object|Status} The record data of the corresponding dog or a 403 status code to tell the call failed.
  * 
+ */
+ /**
+ * @swagger
+ * /dog/location/{location}:
+ *   get:
+ *     description: Filter the location name to get the dog record by location.
+ *     parameters:
+ *       - in: path
+ *         name: location
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Public
  */
 app.get('/dog/location/:location', (req, res)=> {
     var process = false 
@@ -229,6 +311,33 @@ app.get('/dog/location/:location', (req, res)=> {
  * JSON data if the account is found, or a 403 status code to tell the call failed.
  * 
  */
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     description: Handles login request of the workers. Generate access tokens for workers.
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: password
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data inputted is empty.
+ *       'accessToken':
+ *         description: The access token string generated to authenticate worker's access.
+ *     tags:
+ *       - Auth
+ */
 app.post('/login', (req, res) => {
     var process = false 
 
@@ -263,7 +372,8 @@ app.post('/login', (req, res) => {
                 }
             })
         }else{
-            console.log('error with data')             
+            console.log('error with data')  
+            res.sendStatus(404)           
         }
     })
 })
@@ -275,6 +385,7 @@ app.post('/login', (req, res) => {
  * @param {Object} next Callback function to process to the next function.
  * @returns {Status} A 403 or 401 status code to notify an error occur if an error is called.
  */
+
 function authenticateToken(req, res, next) {
     console.log(req.headers)
 
@@ -329,6 +440,25 @@ function generateToken(user) {
  * @returns {Object|Status} The record data of all the dogs or a 403 status code to tell the call failed.
  * 
  */
+/**
+ * @swagger
+ * /worker/dog:
+ *   get:
+ *     description: Get all the dog records, but only workers can call.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       'rows':
+ *         description: The dog records in the database.
+ *     tags:
+ *       - Workers
+ */
 app.get('/worker/dog', authenticateToken, (req, res)=> {
     var process = false
 
@@ -360,6 +490,55 @@ app.get('/worker/dog', authenticateToken, (req, res)=> {
  * @returns {Status} A 205 status code to tell the call is successful or a 403 status code to tell the call failed.
  * 
  */
+/**
+ * @swagger
+ * /worker:
+ *   post:
+ *     description: Register a worker account in the database and hash the password beofre it is stored.
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: password
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: signup_code
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the sql query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       '200':
+ *         description: The successful status code if the query is sucessful.
+ *     tags:
+ *       - Workers
+ */
 app.post('/worker', (req, res)=> {
     var process = false
 
@@ -379,7 +558,7 @@ app.post('/worker', (req, res)=> {
         if(check){
             params.password = crypto.createHash('sha512').update(params.password).digest('hex');
             const checkTwo = checkValid(params)
-            if (check){
+            if (checkTwo){
                 connection.query('INSERT INTO worker SET ?', params, (error, rows)=>{
                     connection.release()    
                     if(!error) {
@@ -407,6 +586,37 @@ app.post('/worker', (req, res)=> {
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {Object|Status} The record data of the corresponding dog or a 403 status code to tell the call failed.
  * 
+ */
+/**
+ * @swagger
+ * /worker/dog/{id}:
+ *   get:
+ *     description: Get the correct dog record by id, but only workers can call the API and search dogs.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Workers
  */
 app.get('/worker/dog/:id', authenticateToken, (req, res)=> {
     var process = false
@@ -438,7 +648,8 @@ app.get('/worker/dog/:id', authenticateToken, (req, res)=> {
                 }
             })
         }else{
-            console.log('error with data')             
+            console.log('error with data')
+            res.sendStatus(404)             
         }
     })
 })
@@ -450,6 +661,54 @@ app.get('/worker/dog/:id', authenticateToken, (req, res)=> {
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {String|Status} The message to notify worker that the call is successful and the record is added or a 403 status code to tell the call failed.
  * 
+ */
+/**
+ * @swagger
+ * /dog:
+ *   post:
+ *     description: Add a new dog record using the data inputted in the frontend.
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: image
+ *         schema:
+ *           type: string
+ *         required: true
+ *         allowReserved: true
+ *     responses:
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is added.
+ *       '403':
+ *         description: Error status code if the sql query went wrong.
+ *     tags:
+ *       - Workers
  */
 app.post('/dog', authenticateToken, (req, res)=> {
     var process = false
@@ -486,6 +745,37 @@ app.post('/dog', authenticateToken, (req, res)=> {
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {String|Status} The message to notify worker that the call is successful and the record is deleted or a 403 status code to tell the call failed.
  * 
+ */
+/**
+ * @swagger
+ * /dog/{id}:
+ *   delete:
+ *     description: Delete the correct dog record using id value passed in the frontend, but only workers can call the API.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is deleted.
+ *     tags:
+ *       - Workers
  */
 app.delete('/dog/:id', authenticateToken , (req, res)=> { 
     var process = false
@@ -525,6 +815,71 @@ app.delete('/dog/:id', authenticateToken , (req, res)=> {
  * @returns {String|Status} The message to notify worker that the call is successful and the record is updated or a 403 status code to tell the call failed.
  * 
  */
+/**
+ * @swagger
+ * /dog/{id}:
+ *   put:
+ *     description: Delete the correct dog record using id value passed in the frontend, but only workers can call the API.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: image
+ *         schema:
+ *           type: string
+ *         required: true
+ *         allowReserved: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is updated.
+ *     tags:
+ *       - Workers
+ */
 app.put('/dog/:id', authenticateToken ,(req, res)=> {
     var process = false 
 
@@ -550,7 +905,8 @@ app.put('/dog/:id', authenticateToken ,(req, res)=> {
                 }
             })
         }else{
-            console.log('error with data')             
+            console.log('error with data')     
+            res.sendStatus(404)        
         }
     })
 })
