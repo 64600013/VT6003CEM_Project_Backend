@@ -346,21 +346,29 @@ app.post('/worker', (req, res)=> {
 
         // Get the account info passed from the frontend and hashed the password value.
         const params = req.body
-        params.password = crypto.createHash('sha512').update(params.password).digest('hex');
+        console.log(params)
 
-        const check = checkValid(params)
-        if (check){
-            connection.query('INSERT INTO worker SET ?', params, (error, rows)=>{
-                connection.release()    
-                if(!error) {
-                    res.sendStatus(205);
-                } else {
-                    console.log(error)
-                    res.sendStatus(403)
-                }
-            })
+        const check = checkValid(params.password)
+        if(check){
+            params.password = crypto.createHash('sha512').update(params.password).digest('hex');
+            const checkTwo = checkValid(params)
+            if (check){
+                connection.query('INSERT INTO worker SET ?', params, (error, rows)=>{
+                    connection.release()    
+                    if(!error) {
+                        res.sendStatus(200);
+                    } else {
+                        console.log(error)
+                        res.sendStatus(403)
+                    }
+                })
+            }else{
+                console.log('error with data')  
+                res.sendStatus(404)           
+            }
         }else{
-            console.log('error with data')             
+            console.log('error with data') 
+            res.sendStatus(404)
         }
     })
 })
@@ -468,6 +476,7 @@ app.delete('/dog/:id', authenticateToken , (req, res)=> {
             connection.query('DELETE FROM dog WHERE id = ?', [req.params.id], (error, rows)=>{
                 connection.release()    
                 if(!error) {
+                    console.log('true')
                     res.send(`The dog with the record id: ${[req.params.id]} has been removed.`)
                 } else {
                     console.log(error)
@@ -475,7 +484,8 @@ app.delete('/dog/:id', authenticateToken , (req, res)=> {
                 }
             })
         }else{
-            console.log('error with data')             
+            console.log('error with data')  
+            res.sendStatus(404)           
         }
     })
 })
@@ -544,51 +554,4 @@ function checkObject(data){
     return result
 }
 
-
-// app.get('/worker/:id', (req, res)=> {
-    
-//     const process = false; 
-//     connectDb.getConnection((error, connection)=>{
-//     if(error) {
-//         process = true
-//     } else {
-//         throw err
-//     }
-//     console.log(`process : ${process}`)
-        
-//     connection.query('SELECT * FROM worker WHERE id = ?', [req.params.id], (error, rows)=>{
-//             connection.release()    
-//             if(!error) {
-//                 res.send(rows)
-//             } else {
-//                 console.log(error)
-//                 res.sendStatus(403)
-//             }
-//         })
-//     })
-// })
-
-// app.delete('/worker/:id', (req, res)=> {
-//     const process = false; 
-//     connectDb.getConnection((error, connection)=>{
-//     if(error) {
-//         process = true
-//     } else {
-//         throw err
-//     }
-//     console.log(`process : ${process}`)
-//         connection.query('DELETE FROM worker WHERE id = ?', [req.params.id], (error, rows)=>{
-//             connection.release()   
-
-//             if(!error) {
-//                 res.send(`The worker with the record id: ${[req.params.id]} has been removed.`)
-//             } else {
-//                 console.log(error)
-//                 res.sendStatus(403)
-//             }
-//         })
-//     })
-// })
-
-
-app.listen(4000)
+module.exports = app.listen(4000)

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "",
   "license": "ISC",
@@ -21,8 +22,16 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
   "devDependencies": {
     "dotenv": "^16.0.1",
-    "nodemon": "^2.0.16"
+    "jest": "^28.1.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
   }
 }
