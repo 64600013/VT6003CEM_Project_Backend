@@ -8,8 +8,11 @@ const bodyParser = require('body-parser')
 const mysql = require('mysql')
 const jwt = require('jsonwebtoken')
 const app = express()
-const connectDb = mysql.createPool({connectionLimit: 10, host : 'localhost', user : 'root', password : '', database : 'web_api'})
 var crypto = require('crypto');
+
+// The connection to the mySQL database.
+const connectDb = mysql.createPool({connectionLimit: 10, host : 'localhost', user : 'root', password : '', database : 'web_api'})
+
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -36,7 +39,7 @@ app.use(cors())
 app.get('/dog', (req, res)=> {
     var process = false 
 
-    connectDb.getConnection((err, connection)=>{
+    connectDb.getConnection((error, connection)=>{
         if(error) {
             throw error
         } else {
@@ -192,6 +195,7 @@ app.post('/login', (req, res) => {
         }
         console.log(`process : ${process}`)
         
+        // Get the account info passed from the frontend and hashed the password value.
         const { email, password } = req.body
         const hashed = crypto.createHash('sha512').update(password).digest('hex');
 
@@ -203,6 +207,7 @@ app.post('/login', (req, res) => {
                     if (rows.length === 0) {
                         res.send('User Not Found, please try again.')
                     } else {
+                        // Generate a access token for user using email if the user is found in the database.
                         const user = { email: rows.email }
                         const accessToken = generateToken(user)
                         res.json({ accessToken: accessToken })
@@ -228,6 +233,7 @@ app.post('/login', (req, res) => {
 function authenticateToken(req, res, next) {
     console.log(req.headers)
 
+    // Get the access token save in the header passed from the frontend.
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
     console.log(token)
@@ -320,9 +326,10 @@ app.post('/worker', (req, res)=> {
         }
         console.log(`process : ${process}`)
 
-        
+        // Get the account info passed from the frontend and hashed the password value.
         const params = req.body
         params.password = crypto.createHash('sha512').update(params.password).digest('hex');
+
         const check = checkValid(params)
         if (check){
             connection.query('INSERT INTO worker SET ?', params, (error, rows)=>{
@@ -365,7 +372,13 @@ app.get('/worker/dog/:id', authenticateToken, (req, res)=> {
             connection.query('SELECT * FROM dog WHERE id = ?', [req.params.id], (error, rows)=>{
                 connection.release()   
                 if(!error) {
-                    res.send(rows)
+                    console.log(rows)
+                    const check = checkObject(rows)
+                    if(check){
+                        res.sendStatus(404)
+                    } else {
+                        res.send(rows)
+                    }
                 } else {
                     console.log(error)
                     res.sendStatus(403)
@@ -469,6 +482,7 @@ app.put('/dog/:id', authenticateToken ,(req, res)=> {
         console.log(`process : ${process}`)
         
         const { id, name, age, sex, breed, location, image } = req.body
+
         const check = checkValid(req.body)
         if (check){
             connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, breed = ?, location = ?, image = ? WHERE id = ?', [name, age, sex, breed, location, image, id], (error, rows)=>{
@@ -495,6 +509,19 @@ function checkValid(data){
     result = true
     if(data === null || data === undefined){
         result = false
+    }
+    return result
+}
+
+/**
+ * Check the object data value passed through is empty or not.
+ * @param {Object} data The Object data that wanted to check.
+ * @returns {Boolean} The reponse boolean to tell the result, true if empty or false is not empty.
+ */
+function checkObject(data){
+    result = false
+    if(Object.keys(data).length === 0){
+        result = true
     }
     return result
 }
