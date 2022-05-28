@@ -20,7 +20,9 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "passport": "^0.6.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.4.0"
   },
   "jest": {
     "testEnvironment": "node",

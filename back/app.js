@@ -8,6 +8,8 @@ const bodyParser = require('body-parser')
 const mysql = require('mysql')
 const jwt = require('jsonwebtoken')
 const app = express()
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
 var crypto = require('crypto');
 
 // The connection to the mySQL database.
@@ -18,6 +20,22 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
+const swaggerOptions = {
+    swaggerDefinition: {
+        info: {
+            title: 'Dog Shelter API',
+            description: "Dos Shelter API for listing and matchin dogs.",
+            contact: {
+                name: "test"
+            },
+            servers: ["http://localhost:4000/login"]
+        }
+    },
+    apis: ["app.js"]
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // *************************************************************************************************************************** //
 //  This path is for all the API that does not require authorized access and for public to call.                               //
@@ -35,6 +53,15 @@ app.use(cors())
  * @param {Object} res The response data waiting to be passed to frontend.
  * @returns {Object|Status} The record data of all the dogs or a 403 status code to tell the call failed.
  * 
+ */
+/**
+ * @swagger
+ * /dog:
+ *   get:
+ *     description: Get all the dog records
+ *     responses:
+ *       '403':
+ *         description: Error message
  */
 app.get('/dog', (req, res)=> {
     var process = false 
