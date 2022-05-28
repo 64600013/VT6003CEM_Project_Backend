@@ -83,7 +83,13 @@ app.get('/dog/breed/:breed', (req, res)=> {
             connection.query('SELECT * FROM dog WHERE breed = ? ', [req.params.breed], (error, rows)=>{
                 connection.release()    
                 if(!error) {
-                    res.send(rows)
+                    console.log(rows)
+                    const check = checkObject(rows)
+                    if(check){
+                        res.sendStatus(404)
+                    } else {
+                        res.send(rows)
+                    }
                 } else {
                     console.log(error)
                     res.sendStatus(403)
@@ -117,7 +123,13 @@ app.get('/dog/age/:age', (req, res)=> {
             connection.query('SELECT * FROM dog WHERE age = ? ', [req.params.age], (error, rows)=>{
                 connection.release()   
                 if(!error) {
-                    res.send(rows)
+                    console.log(rows)
+                    const check = checkObject(rows)
+                    if(check){
+                        res.sendStatus(404)
+                    } else {
+                        res.send(rows)
+                    }
                 } else {
                     console.log(error)
                     res.sendStatus(403)
@@ -151,7 +163,13 @@ app.get('/dog/location/:location', (req, res)=> {
             connection.query('SELECT * FROM dog WHERE location = ? ', [req.params.location], (error, rows)=>{
                 connection.release()    
                 if(!error) {
-                    res.send(rows)
+                    console.log(rows)
+                    const check = checkObject(rows)
+                    if(check){
+                        res.sendStatus(404)
+                    } else {
+                        res.send(rows)
+                    }
                 } else {
                     console.log(error)
                     res.sendStatus(403)
