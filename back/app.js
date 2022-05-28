@@ -18,7 +18,12 @@ const connectDb = mysql.createPool({connectionLimit: 10, host : 'localhost', use
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(cors())
+
+// Restricted to only the frontend port can be allowed o call the APIs
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}))
 
 // Swagger OAS details
 const swaggerOptions = {
