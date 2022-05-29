@@ -12,9 +12,7 @@ View and import the [mySQL](https://github.com/64600013/VT6003CEM_Project_Backen
 
 # Scripts
 ### `npm start`
-This script is used to run the actual back end server itself.
-
-Runs the app in the development mode.
+This script is used to run the app in the development mode.
 
 ### `npm test`
 
