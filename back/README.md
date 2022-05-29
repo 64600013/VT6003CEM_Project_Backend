@@ -16,8 +16,6 @@ This script is used to run the actual back end server itself.
 
 Runs the app in the development mode.
 
-Open http://localhost:4000 to view it in your browser once you have completed in setting up project enviroment.
-
 ### `npm test`
 
 Run this script if you want to see the testing cases this back end server has done.
