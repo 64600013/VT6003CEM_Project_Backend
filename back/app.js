@@ -386,6 +386,29 @@ app.post('/login', (req, res) => {
 })
 
 /**
+ * @swagger
+ * /checkToken:
+ *   get:
+ *     description: Check if the user have a accesToken.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '404':
+ *         description: Error status code if the authenticate process failed.
+ *       '200':
+ *         description: The successful status code if the authenticate process passed.
+ *     tags:
+ *       - Auth
+ */
+app.get('/checkToken', authenticateToken, (req, res)=> {
+    res.sendStatus(200)
+})
+
+/**
  * Check whether or not the user is a worker by checking the token.
  * @param {Object} req The request data passed from frontend.
  * @param {Object} res The response data waiting to be passed to frontend.
