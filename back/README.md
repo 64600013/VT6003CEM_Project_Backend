@@ -36,3 +36,9 @@ View the [doc Folder](https://github.com/64600013/VT6003CEM_Project_Backend/tree
 
 Or view the comments inside the code documentation to view more details.
 
+<br />
+
+For JSON schemas documentation:
+
+View the [doc Folder](https://github.com/64600013/VT6003CEM_Project_Backend/tree/main/back/docs) to see each JSON files.
+
