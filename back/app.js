@@ -900,6 +900,8 @@ app.put('/dog/:id', authenticateToken ,(req, res)=> {
         
         const { id, name, age, sex, breed, location, image } = req.body
 
+        console.log(id)
+        console.log(name)
         const check = checkValid(req.body)
         if (check){
             connection.query('UPDATE dog SET name = ?, age = ?, sex = ?, breed = ?, location = ?, image = ? WHERE id = ?', [name, age, sex, breed, location, image, id], (error, rows)=>{
