@@ -1,5 +1,5 @@
 # Set up
-In order to set up the back end server, you first need to install the required packages.
+In order to set up the back end server, you first need to install the required node modules.
 
 ### `npm install`
 This script will install all the dependency packages that the back end server needed to run.
