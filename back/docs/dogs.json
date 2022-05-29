@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+      "worker": {
+    "id": "/dog",
+    "title": "Dog",
+    "description": "All the dog record of the animal shelter.",
+    "type": "object",
+    "properties": {
+      "id": {
+        "description": "The unique identifer given for each dog.",
+        "type": "integer"
+        },
+      "name": {
+        "description": "The dog name for the dog in the shelter.",
+        "type": "string"
+      },
+      "age": {
+        "description": "The current dog age of the dog.",
+        "type": "string"
+      },
+      "sex": {
+        "description": "The sex of the dog.",
+        "type": "string"
+      },
+      "breed": {
+        "description": "The breed variation of the dog.",
+        "type": "string"
+      },
+      "location": {
+        "description": "The location name of where the dog is current sheltered in.",
+        "type": "string"
+      },
+      "image": {
+        "description": "The image link of the dog to identify dogs.",
+        "type": "string"
+      }
+    },
+    "required": ["id", "name", "age", "sex", "breed", "location"],
+    "additionalProperties": false
+    }
+  }
+}

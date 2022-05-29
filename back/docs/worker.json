@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+      "worker": {
+    "id": "/worker",
+    "title": "Worker",
+    "description": "A worker account details in the system",
+    "type": "object",
+    "properties": {
+      "id": {
+        "description": "The unique identifer given for each worker account.",
+        "type": "integer"
+      },
+      "email": {
+        "description": "The email of the worker, used in login.",
+        "type": "string"
+      },
+      "password": {
+        "description": "The password of the worker, used in login.",
+        "type": "string"
+      },
+      "age": {
+        "description": "The age number of the worker.",
+        "type": "string"
+      },
+      "sex": {
+        "description": "The sex of the worker",
+        "type": "string"
+      },
+      "image": {
+        "description": "The image link of face of the worker.",
+        "type": "string"
+      },
+      "signup_code": {
+        "description": "The unique code used to identify the account is register by a worker.",
+        "type": "string"
+      }
+    },
+    "required": ["id", "email", "password"],
+    "additionalProperties": false
+    }
+  }
+}
+  

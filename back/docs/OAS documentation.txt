@@ -1,0 +1,376 @@
+/==============================================================================
+/
+/ Public Paths
+/
+/==============================================================================
+/**
+ * @swagger
+ * /dog:
+ *   get:
+ *     description: Get all the dog records. Avaliable for all users to use.
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       'rows':
+ *         description: The dog records in the database.
+ *     tags:
+ *       - Public
+ */
+ /**
+ * @swagger
+ * /dog/breed/{breed}:
+ *   get:
+ *     description: Filter the breed name to get the dog record by breed.
+ *     parameters:
+ *       - in: path
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *      - Public
+ */
+ /**
+ * @swagger
+ * /dog/age/{age}:
+ *   get:
+ *     description: Filter the age name to get the dog record by age.
+ *     parameters:
+ *       - in: path
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Public
+ */
+  /**
+ * @swagger
+ * /dog/location/{location}:
+ *   get:
+ *     description: Filter the location name to get the dog record by location.
+ *     parameters:
+ *       - in: path
+ *         name: location
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data return is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Public
+ */
+/==============================================================================
+/
+/ Authorization Paths
+/
+/==============================================================================
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     description: Handles login request of the workers. Generate access tokens for workers.
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: password
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the data inputted is empty.
+ *       'accessToken':
+ *         description: The access token string generated to authenticate worker's access.
+ *     tags:
+ *       - Auth
+ */
+/==============================================================================
+/
+/ Worker Paths
+/
+/==============================================================================
+/**
+ * @swagger
+ * /worker/dog:
+ *   get:
+ *     description: Get all the dog records, but only workers can call.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       'rows':
+ *         description: The dog records in the database.
+ *     tags:
+ *       - Workers
+ */
+ /**
+ * @swagger
+ * /worker:
+ *   post:
+ *     description: Register a worker account in the database and hash the password beofre it is stored.
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: password
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: signup_code
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the sql query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       '200':
+ *         description: The successful status code if the query is sucessful.
+ *     tags:
+ *       - Workers
+ */
+ /**
+ * @swagger
+ * /worker/dog/{id}:
+ *   get:
+ *     description: Get the correct dog record by id, but only workers can call the API and search dogs.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'rows':
+ *         description: The dog record in the database.
+ *     tags:
+ *       - Workers
+ */
+ /**
+ * @swagger
+ * /dog:
+ *   post:
+ *     description: Add a new dog record using the data inputted in the frontend.
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: image
+ *         schema:
+ *           type: string
+ *         required: true
+ *         allowReserved: true
+ *     responses:
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is added.
+ *       '403':
+ *         description: Error status code if the sql query went wrong.
+ *     tags:
+ *       - Workers
+ */
+ /**
+ * @swagger
+ * /dog/{id}:
+ *   delete:
+ *     description: Delete the correct dog record using id value passed in the frontend, but only workers can call the API.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is deleted.
+ *     tags:
+ *       - Workers
+ */
+ /**
+ * @swagger
+ * /dog/{id}:
+ *   put:
+ *     description: Find the correct dog record using id value and update the dog record details passed in the frontend , but only workers can call the API.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: sex
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: query
+ *         name: location
+ *         required: true
+ *         schema:
+ *           type: string
+ *         allowReserved: true
+ *       - in: query
+ *         name: image
+ *         schema:
+ *           type: string
+ *         required: true
+ *         allowReserved: true
+ *     responses:
+ *       '403':
+ *         description: Error status code if the query went wrong.
+ *       '404':
+ *         description: Error status code if the the data inputted from the frontend is empty.
+ *       'string':
+ *         description: The successful string message if the query is sucessful and the dog record is updated.
+ *     tags:
+ *       - Workers
+ */

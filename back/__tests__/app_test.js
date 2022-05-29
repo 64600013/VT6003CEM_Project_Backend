@@ -51,3 +51,21 @@ describe('register a worker account with no info sent to the server', () => {
         expect(res.statusCode).toEqual(404)
     })
 });
+
+describe('login a worker account with correct email and password data', () => {
+    it('should return an access token', async () => {
+        const res = await request(app).post('/login').send({email: 'junkmailtaker646@gmail.com', password: 'asdasd'})
+        console.log(res.body)
+        // The hashing token value will slight change each time the verification process is called
+        // Making the comparision of two value not do-able.
+        expect(res.body.accessToken).toEqual(expect.anything())
+    })
+});
+
+describe('login a worker account with correct wrong email and password data', () => {
+    it('should return a 404 status code', async () => {
+        const res = await request(app).post('/login').send({password: 'asdassssssssd'})
+        console.log(res.statusCode)
+        expect(res.statusCode).toEqual(404)
+    })
+});

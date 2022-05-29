@@ -356,10 +356,12 @@ app.post('/login', (req, res) => {
         
         // Get the account info passed from the frontend and hashed the password value.
         const { email, password } = req.body
+        console.log(password)
         const hashed = crypto.createHash('sha512').update(password).digest('hex');
 
         const check = checkValid(hashed)
-        if (check){
+        const checkTwo = checkValid(email)
+        if (check && checkTwo){
             connection.query('SELECT * FROM worker WHERE email = ? AND password = ?', [email, hashed], (error, rows) => {
                 connection.release()    
                 if (!error) {
@@ -824,7 +826,7 @@ app.delete('/dog/:id', authenticateToken , (req, res)=> {
  * @swagger
  * /dog/{id}:
  *   put:
- *     description: Delete the correct dog record using id value passed in the frontend, but only workers can call the API.
+ *     description: Find the correct dog record using id value and update the dog record details passed in the frontend , but only workers can call the API.
  *     parameters:
  *       - in: header
  *         name: Authorization
